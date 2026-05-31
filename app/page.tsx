@@ -618,8 +618,8 @@ async function getForYouPersonalized(
     .map(([id]) => id);
 
   const trendingMoviesItems = withMediaType(
-    (trendingMovies.results ?? []) as HomeMediaItem[],
-    'movie'
+  (trendingMovies.results ?? []) as HomeMediaItem[],
+  'movie'
   );
   const trendingTvItems = withMediaType(
     (trendingTv.results ?? []) as HomeMediaItem[],
