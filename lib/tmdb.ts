@@ -65,6 +65,7 @@ export interface TmdbMovie {
   popularity: number;
   adult?: boolean;
   original_language?: string;
+  media_type?: 'movie' | 'tv';
 }
 
 export interface TmdbMovieDetails extends TmdbMovie {
