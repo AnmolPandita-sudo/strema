@@ -900,3 +900,8 @@ input {
     box-shadow: 0 18px 45px rgba(0, 0, 0, 0.45);
   }
 }
+
+/* RatingNotice modal */
+.rating-notice-card::-webkit-scrollbar {
+  display: none;
+}

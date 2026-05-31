@@ -6,8 +6,24 @@ export function RatingNotice() {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    // SHOW ON EVERY REFRESH FOR TESTING
-    setOpen(true);
+    const STORAGE_KEY = 'strema-rating-notice-last-shown';
+
+    try {
+      const today = new Date().toISOString().slice(0, 10); // "YYYY-MM-DD"
+      const lastShown = localStorage.getItem(STORAGE_KEY);
+
+      if (lastShown === today) {
+        // already shown today -> keep closed
+        setOpen(false);
+      } else {
+        // first visit today -> show and record
+        setOpen(true);
+        localStorage.setItem(STORAGE_KEY, today);
+      }
+    } catch {
+      // if localStorage fails, fall back to showing it
+      setOpen(true);
+    }
   }, []);
 
   if (!open) return null;
@@ -19,7 +35,9 @@ export function RatingNotice() {
       <div style={s.redGlowTwo} />
       <div style={s.whiteGlow} />
 
-      <div style={s.card}>
+      <div
+        className="rating-notice-card"
+        style={s.card}>
         {/* Premium border glow */}
         <div style={s.borderGlow} />
 
@@ -100,24 +118,33 @@ const s: Record<string, React.CSSProperties> = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+
     overflow: 'hidden',
-    padding: 'clamp(12px, 2vw, 28px)',
+
+    padding:
+      'max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left))',
+
     background:
-      'radial-gradient(circle at top, rgba(120,0,0,0.18), rgba(0,0,0,0.92) 58%)',
+      'radial-gradient(circle at top, rgba(120,0,0,.18), rgba(0,0,0,.92) 58%)',
+
     backdropFilter: 'blur(24px)',
     WebkitBackdropFilter: 'blur(24px)',
-    animation: 'fadeIn 0.35s ease',
+
+    animation: 'fadeIn .35s ease',
   },
 
   redGlowOne: {
     position: 'absolute',
     top: '-10%',
     left: '-5%',
-    width: 'min(32vw, 420px)',
-    height: 'min(32vw, 420px)',
+
+    width: 'clamp(220px, 32vw, 420px)',
+    height: 'clamp(220px, 32vw, 420px)',
+
     borderRadius: '999px',
-    background: 'rgba(229,9,20,0.22)',
+    background: 'rgba(229,9,20,.22)',
     filter: 'blur(140px)',
+
     pointerEvents: 'none',
   },
 
@@ -125,11 +152,14 @@ const s: Record<string, React.CSSProperties> = {
     position: 'absolute',
     bottom: '-15%',
     right: '-5%',
-    width: 'min(38vw, 520px)',
-    height: 'min(38vw, 520px)',
+
+    width: 'clamp(260px, 38vw, 520px)',
+    height: 'clamp(260px, 38vw, 520px)',
+
     borderRadius: '999px',
-    background: 'rgba(255,0,85,0.14)',
+    background: 'rgba(255,0,85,.14)',
     filter: 'blur(160px)',
+
     pointerEvents: 'none',
   },
 
@@ -137,75 +167,91 @@ const s: Record<string, React.CSSProperties> = {
     position: 'absolute',
     top: '20%',
     right: '15%',
-    width: 'min(24vw, 280px)',
-    height: 'min(24vw, 280px)',
+
+    width: 'clamp(180px, 24vw, 280px)',
+    height: 'clamp(180px, 24vw, 280px)',
+
     borderRadius: '999px',
-    background: 'rgba(255,255,255,0.06)',
+    background: 'rgba(255,255,255,.06)',
     filter: 'blur(120px)',
+
     pointerEvents: 'none',
   },
 
   card: {
     position: 'relative',
 
-    width: '100%',
-    maxWidth: 'min(92vw, 560px)',
+    width: 'clamp(320px, 92vw, 560px)',
 
-    maxHeight: '92vh',
-    overflowY: 'auto',
+    maxHeight: '90vh',
+
     overflowX: 'hidden',
+    overflowY: 'auto',
+
+    WebkitOverflowScrolling: 'touch',
 
     borderRadius: 'clamp(24px, 3vw, 38px)',
 
-    padding:
-      'clamp(22px, 4vw, 42px)',
+    padding: 'clamp(18px, 5vw, 42px)',
 
     background:
-      'linear-gradient(180deg, rgba(17,17,17,0.86), rgba(5,5,5,0.96))',
+      'linear-gradient(180deg, rgba(17,17,17,.86), rgba(5,5,5,.96))',
 
-    border: '1px solid rgba(255,255,255,0.08)',
+    border: '1px solid rgba(255,255,255,.08)',
 
     boxShadow:
-      '0 30px 120px rgba(0,0,0,0.78), inset 0 1px 0 rgba(255,255,255,0.08)',
+      '0 30px 120px rgba(0,0,0,.78), inset 0 1px 0 rgba(255,255,255,.08)',
 
     backdropFilter: 'blur(24px)',
     WebkitBackdropFilter: 'blur(24px)',
 
     animation:
-      'fadeUp 0.45s cubic-bezier(.22,1,.36,1)',
+      'fadeUp .45s cubic-bezier(.22,1,.36,1)',
+
+    scrollbarWidth: 'none',
+    msOverflowStyle: 'none',
   },
 
   borderGlow: {
     position: 'absolute',
-    inset: '-1px',
+
+    inset: 0,
+
     borderRadius: 'inherit',
+
     padding: '1px',
+
     background:
-      'linear-gradient(135deg, rgba(229,9,20,0.72), rgba(255,255,255,0.08), rgba(229,9,20,0.22))',
+      'linear-gradient(135deg, rgba(229,9,20,.72), rgba(255,255,255,.08), rgba(229,9,20,.22))',
+
     WebkitMask:
       'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+
     WebkitMaskComposite: 'xor',
+
     pointerEvents: 'none',
   },
 
   close: {
     position: 'absolute',
+
     top: 'clamp(14px, 2vw, 18px)',
     right: 'clamp(14px, 2vw, 18px)',
 
-    width: 'clamp(38px, 5vw, 44px)',
-    height: 'clamp(38px, 5vw, 44px)',
+    width: 'clamp(36px, 8vw, 48px)',
+    height: 'clamp(36px, 8vw, 48px)',
 
     borderRadius: '999px',
-    border: '1px solid rgba(255,255,255,0.08)',
 
-    background: 'rgba(255,255,255,0.05)',
+    border: '1px solid rgba(255,255,255,.08)',
 
-    color: '#ffffff',
+    background: 'rgba(255,255,255,.05)',
+
+    color: '#fff',
 
     cursor: 'pointer',
 
-    fontSize: '0.92rem',
+    fontSize: 'clamp(.85rem, 2vw, 1rem)',
     fontWeight: 700,
 
     backdropFilter: 'blur(12px)',
@@ -215,26 +261,32 @@ const s: Record<string, React.CSSProperties> = {
   topRow: {
     display: 'flex',
     alignItems: 'center',
+
     gap: '10px',
-    marginBottom: '20px',
+
+    marginBottom: 'clamp(16px, 2vw, 20px)',
   },
 
   netflixMark: {
     width: '12px',
     height: '12px',
+
     borderRadius: '999px',
+
     background: '#E50914',
+
     boxShadow:
-      '0 0 20px rgba(229,9,20,0.95)',
+      '0 0 20px rgba(229,9,20,.95)',
   },
 
   brand: {
-    color: '#ffffff',
-    fontWeight: 900,
-    letterSpacing: '0.24em',
+    color: '#fff',
 
-    fontSize:
-      'clamp(0.72rem, 1vw, 0.8rem)',
+    fontWeight: 900,
+
+    letterSpacing: '.24em',
+
+    fontSize: 'clamp(.72rem, 1vw, .85rem)',
   },
 
   badge: {
@@ -243,25 +295,24 @@ const s: Record<string, React.CSSProperties> = {
     justifyContent: 'center',
 
     padding:
-      'clamp(7px, 1vw, 10px) clamp(12px, 2vw, 16px)',
+      'clamp(7px,1vw,10px) clamp(12px,2vw,16px)',
 
     borderRadius: '999px',
 
     background:
-      'linear-gradient(135deg, rgba(229,9,20,0.18), rgba(255,255,255,0.06))',
+      'linear-gradient(135deg, rgba(229,9,20,.18), rgba(255,255,255,.06))',
 
-    border: '1px solid rgba(255,255,255,0.06)',
+    border: '1px solid rgba(255,255,255,.06)',
 
     color: '#fca5a5',
 
     fontWeight: 700,
 
-    fontSize:
-      'clamp(0.68rem, 1vw, 0.74rem)',
+    fontSize: 'clamp(.68rem,1vw,.78rem)',
 
-    letterSpacing: '0.12em',
+    letterSpacing: '.12em',
 
-    marginBottom: '22px',
+    marginBottom: 'clamp(18px,2vw,22px)',
 
     backdropFilter: 'blur(14px)',
     WebkitBackdropFilter: 'blur(14px)',
@@ -270,28 +321,26 @@ const s: Record<string, React.CSSProperties> = {
   title: {
     margin: '0 0 18px',
 
-    color: '#ffffff',
+    color: '#fff',
 
-    fontWeight: 950,
+    fontWeight: 660,
 
-    lineHeight: 0.95,
+    lineHeight: .95,
 
-    letterSpacing: '-0.07em',
+    letterSpacing: '-.07em',
 
-    fontSize:
-      'clamp(2rem, 5vw, 4rem)',
+    fontSize: 'clamp(1.8rem, 5vw, 2rem)',
 
     textShadow:
-      '0 10px 40px rgba(0,0,0,0.45)',
+      '0 10px 40px rgba(0,0,0,.45)',
   },
 
   text: {
-    margin: '0 0 30px',
+    margin: '0 0 clamp(24px,3vw,30px)',
 
-    color: 'rgba(255,255,255,0.72)',
+    color: 'rgba(255,255,255,.72)',
 
-    fontSize:
-      'clamp(0.94rem, 1.4vw, 1.05rem)',
+    fontSize: 'clamp(.9rem,2vw,1.05rem)',
 
     lineHeight: 1.8,
 
@@ -301,19 +350,19 @@ const s: Record<string, React.CSSProperties> = {
   footerCard: {
     display: 'flex',
     alignItems: 'flex-start',
+
     gap: '12px',
 
-    padding:
-      'clamp(14px, 2vw, 18px)',
+    padding: 'clamp(14px,2vw,18px)',
 
-    marginBottom: '30px',
+    marginBottom: 'clamp(24px,3vw,30px)',
 
     borderRadius: '22px',
 
     background:
-      'linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.03))',
+      'linear-gradient(135deg, rgba(255,255,255,.05), rgba(255,255,255,.03))',
 
-    border: '1px solid rgba(255,255,255,0.06)',
+    border: '1px solid rgba(255,255,255,.06)',
 
     backdropFilter: 'blur(16px)',
     WebkitBackdropFilter: 'blur(16px)',
@@ -322,72 +371,78 @@ const s: Record<string, React.CSSProperties> = {
   footerDot: {
     width: '10px',
     height: '10px',
+
     marginTop: '5px',
+
     borderRadius: '999px',
+
     background: '#E50914',
+
     flexShrink: 0,
+
     boxShadow:
-      '0 0 14px rgba(229,9,20,0.8)',
+      '0 0 14px rgba(229,9,20,.8)',
   },
 
   footerText: {
-    color: 'rgba(255,255,255,0.68)',
+    color: 'rgba(255,255,255,.68)',
 
-    fontSize:
-      'clamp(0.82rem, 1vw, 0.92rem)',
+    fontSize: 'clamp(.82rem,1.5vw,.95rem)',
 
     lineHeight: 1.7,
   },
 
-  /* PERFECT RESPONSIVE BUTTONS */
   buttonRow: {
-    display: 'flex',
-    flexWrap: 'wrap',
+    display: 'grid',
+
+    gridTemplateColumns:
+      'repeat(auto-fit,minmax(180px,1fr))',
+
     gap: '12px',
+
+    width: '100%',
   },
 
   primaryButton: {
-    flex: '1 1 220px',
+    width: '100%',
 
-    height: '56px',
+    height: 'clamp(48px,6vw,56px)',
 
     borderRadius: '20px',
 
     border: 'none',
 
     background:
-      'linear-gradient(135deg, #E50914 0%, #ff3341 100%)',
+      'linear-gradient(135deg,#E50914 0%,#ff3341 100%)',
 
-    color: '#ffffff',
+    color: '#fff',
 
     fontWeight: 800,
 
-    fontSize:
-      'clamp(0.92rem, 1vw, 1rem)',
+    fontSize: 'clamp(.92rem,1vw,1rem)',
 
     cursor: 'pointer',
 
     boxShadow:
-      '0 20px 45px rgba(229,9,20,0.34)',
+      '0 20px 45px rgba(229,9,20,.34)',
   },
 
   secondaryButton: {
-    flex: '1 1 160px',
+    width: '100%',
 
-    height: '56px',
+    height: 'clamp(48px,6vw,56px)',
 
     borderRadius: '20px',
 
-    border: '1px solid rgba(255,255,255,0.08)',
+    border: '1px solid rgba(255,255,255,.08)',
 
-    background: 'rgba(255,255,255,0.05)',
+    background: 'rgba(255,255,255,.05)',
 
-    color: '#ffffff',
+    color: '#fff',
 
     fontWeight: 700,
 
-    fontSize:
-      'clamp(0.9rem, 1vw, 0.96rem)',
+    fontSize: 'clamp(.9rem,1vw,.96rem)',
 
     cursor: 'pointer',
 
