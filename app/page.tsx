@@ -23,6 +23,8 @@ import {
   fetchMovieTrailer,
   fetchTvTrailer,
   getTitle,
+  TmdbListResponse,
+  TmdbMovie,
 } from '@/lib/tmdb';
 import { Rat } from 'lucide-react';
 import { RatingNotice } from '@/components/rating-notice';
@@ -537,10 +539,10 @@ async function getBecauseYouWatchedTight(
  */
 async function getForYouPersonalized(
   userId: string,
-  trendingMovies: PagedResponse<HomeMediaItem>,
-  trendingTv: PagedResponse<HomeMediaItem>,
-  topRatedMovies: PagedResponse<HomeMediaItem>,
-  topRatedTv: PagedResponse<HomeMediaItem>
+  trendingMovies: TmdbListResponse<TmdbMovie>,
+  trendingTv: TmdbListResponse<TmdbMovie>,
+  topRatedMovies: TmdbListResponse<TmdbMovie>,
+  topRatedTv: TmdbListResponse<TmdbMovie>
 ): Promise<HomeMediaItem[]> {
   const history = await getFullWatchHistory(userId);
   if (!history.length) return [];
