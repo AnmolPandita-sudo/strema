@@ -2,7 +2,7 @@ import { notFound, redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { createServerClient } from '@supabase/ssr';
 import { Navbar } from '@/components/navbar';
-import { WatchPlayer, type SubtitleTrack } from '@/components/watch-player';
+import { WatchPlayer } from '@/components/watch-player';
 import {
   fetchMovieDetails,
   fetchTvDetails,
@@ -35,6 +35,13 @@ type SessionUser = {
 type SubtitleApiResponse = {
   tracks: SubtitleTrack[];
   defaultSubtitleId: string | null;
+};
+
+type SubtitleTrack = {
+  id: string;
+  name: string;
+  language: string;
+  url: string;
 };
 
 async function getSupabaseServer() {
