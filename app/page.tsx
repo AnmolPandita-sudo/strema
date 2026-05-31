@@ -578,8 +578,8 @@ async function getForYouPersonalized(
   };
 
   const historyItems = detailedHistory.filter(
-    (item): item is HistoryItem => item !== null
-  );
+    (item): item is NonNullable<typeof item> => item !== null
+  ) as HistoryItem[];
 
   const genreCounts = new Map<number, number>();
 
