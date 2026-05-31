@@ -74,10 +74,10 @@ const EMPTY_LIST_RESPONSE: PagedResponse<HomeMediaItem> = {
   total_results: 0,
 };
 
-function withMediaType(
-  items: HomeMediaItem[] = [],
+function withMediaType<T extends { id: number }>(
+  items: T[] = [],
   mediaType: 'movie' | 'tv'
-): HomeMediaItem[] {
+): (T & { media_type: 'movie' | 'tv' })[] {
   return items.map((item) => ({
     ...item,
     media_type: mediaType,
