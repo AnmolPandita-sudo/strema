@@ -42,6 +42,7 @@ type SubtitleTrack = {
   name: string;
   language: string;
   url: string;
+  label: string | null;
 };
 
 async function getSupabaseServer() {
