@@ -1,4 +1,4 @@
-import { type NextRequest, NextResponse } from 'next/server';
+import { type NextRequest } from 'next/server';
 import { updateSession } from './lib/supabase/middleware';
 
 export async function proxy(request: NextRequest) {
@@ -13,21 +13,12 @@ export async function proxy(request: NextRequest) {
       img-src 'self' blob: data: https:;
       media-src * blob: data:;
       connect-src *;
-      frame-src
-        'self'
-        https://www.vidking.net
-        https://vidsrc-embed.ru;
-      child-src
-        'self'
-        https://www.vidking.net
-        https://vidsrc-embed.ru;
+      frame-src 'self' https://www.vidking.net https://vidsrc-embed.ru https://vsembed.ru;
+      child-src 'self' https://www.vidking.net https://vidsrc-embed.ru https://vsembed.ru;
     `
       .replace(/\n/g, ' ')
       .trim()
   );
-
-  response.headers.set('X-Frame-Options', 'SAMEORIGIN');
-
   return response;
 }
 

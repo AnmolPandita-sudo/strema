@@ -108,6 +108,7 @@ export function buildPlayerUrl({
   }
 
   if (provider === 'vidsrc') {
+    const normalized = getDefaultSeasonEpisode(mediaType, season, episode);
     const params = new URLSearchParams();
 
     if (imdbId) {
@@ -116,21 +117,28 @@ export function buildPlayerUrl({
       params.set('tmdb', String(tmdbId));
     }
 
-    params.set('autoplay', autoplay ? '1' : '0');
-
     if (subtitleLanguage) {
       params.set('ds_lang', subtitleLanguage);
+    } else {
+      params.set('ds_lang', 'en'); // default to English
+    }
+
+    if (autoplay) {
+      params.set('autoplay', '1');
     }
 
     if (mediaType === 'movie') {
-      return `https://vidsrc.to/embed/movie?${params.toString()}`;
+      // Either path or query style; both are valid
+      // return `https://vidsrc-embed.ru/embed/movie/${tmdbId}`;
+      return `https://vidsrc-embed.ru/embed/movie?${params.toString()}`;
     }
 
+    // TV episode
     params.set('season', String(normalized.season));
     params.set('episode', String(normalized.episode));
     params.set('autonext', '1');
 
-    return `https://vidsrc.to/embed/tv?${params.toString()}`;
+    return `https://vidsrc-embed.ru/embed/tv?${params.toString()}`;
   }
 
   if (provider === 'superembed_vip') {

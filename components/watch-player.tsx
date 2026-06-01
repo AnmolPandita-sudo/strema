@@ -9,12 +9,19 @@ import {
   CheckCircle2,
   AlertCircle,
   LoaderCircle,
-  BadgeInfo,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import {
+  buildPlayerUrl,
+  type PlayerProviderKey,
+  type MediaType as CoreMediaType,
+} from '@/lib/player';
 
-type Provider = 'vidking' | 'vidsrc';
-type MediaType = 'movie' | 'tv';
+// type Provider = 'vidking' | 'vidsrc';
+// type MediaType = 'movie' | 'tv';
+
+type  Provider = PlayerProviderKey;
+type MediaType = CoreMediaType;
 
 type WatchPlayerProps = {
   tmdbId: number;
@@ -36,26 +43,7 @@ type PlayerEventPayload = {
 
 const PROVIDERS: Provider[] = ['vidking', 'vidsrc'];
 
-function buildMovieProviderUrl(provider: Provider, tmdbId: number) {
-  if (provider === 'vidking') {
-    return `https://www.vidking.net/embed/movie/${tmdbId}?color=e50914&autoPlay=true&subtitles=true`;
-  }
 
-  return `https://vidsrc-embed.ru/embed/movie?tmdb=${tmdbId}&autoplay=1&ds_lang=en`;
-}
-
-function buildTvProviderUrl(
-  provider: Provider,
-  tmdbId: number,
-  season: number,
-  episode: number
-) {
-  if (provider === 'vidking') {
-    return `https://www.vidking.net/embed/tv/${tmdbId}/${season}/${episode}?color=e50914&autoPlay=true&nextEpisode=true&episodeSelector=true&subtitles=true`;
-  }
-
-  return `https://vidsrc-embed.ru/embed/tv?tmdb=${tmdbId}&season=${season}&episode=${episode}&autoplay=1&autonext=1&ds_lang=en`;
-}
 
 function clampNumber(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
@@ -96,11 +84,15 @@ export function WatchPlayer({
   const lastEpisodeRef = useRef<{ season: number | null; episode: number | null } | null>(null);
 
   const src = useMemo(() => {
-    if (mediaType === 'movie') {
-      return buildMovieProviderUrl(provider, tmdbId);
-    }
-
-    return buildTvProviderUrl(provider, tmdbId, season, episode);
+    return buildPlayerUrl({
+      provider,
+      mediaType,
+      tmdbId,
+      season,
+      episode,
+      autoplay: true,
+      subtitleLanguage: 'en',
+    });
   }, [provider, tmdbId, mediaType, season, episode]);
 
   const progressValue = Math.min(
