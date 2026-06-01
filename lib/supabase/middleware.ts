@@ -13,14 +13,14 @@ export async function updateSession(request: NextRequest) {
           return request.cookies.get(name)?.value;
         },
         set(name, value, options) {
-          request.cookies.set({ name, value, ...options });
+          // Update the outgoing response cookie
           response = NextResponse.next({ request });
-          response.cookies.set({ name, value, ...options });
+          response.cookies.set(name, value, options);
         },
         remove(name, options) {
-          request.cookies.set({ name, value: '', ...options, maxAge: 0 });
+          // Clear the cookie on the response; no need to touch request.cookies
           response = NextResponse.next({ request });
-          response.cookies.set({ name, value: '', ...options, maxAge: 0 });
+          response.cookies.set(name, '', { ...options, maxAge: 0 });
         },
       },
     }
