@@ -295,10 +295,6 @@ export default async function WatchPage(props: WatchPageProps) {
           title={title ?? 'Untitled'}
           season={typedMediaType === 'tv' ? seasonNumber : undefined}
           episode={typedMediaType === 'tv' ? episodeNumber : undefined}
-          poster={tmdbImage(posterPath, 'w780')}
-          streamUrl={streamUrl}
-          subtitles={subtitleData.tracks}
-          defaultSubtitleId={subtitleData.defaultSubtitleId}
         />
       </div>
 
