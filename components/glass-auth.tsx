@@ -188,9 +188,7 @@ export function SignUpCard() {
         </div>
 
         <h1 style={s.title}>
-          Start your
-          <br />
-          journey
+          Start your journey
         </h1>
 
         <p style={s.subtitle}>
@@ -292,7 +290,7 @@ const s: Record<string, React.CSSProperties> =
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
-    padding: '20px',
+    padding: '30px',
     background:
       'radial-gradient(circle at top, rgba(120,0,0,0.18), rgba(0,0,0,0.94) 58%)',
   },
@@ -341,7 +339,7 @@ const s: Record<string, React.CSSProperties> =
       width: '100%',
       maxWidth: '460px',
       borderRadius: '32px',
-      padding: '28px',
+      padding: '30px',
       overflow: 'hidden',
       background: glass,
       border:
@@ -353,18 +351,18 @@ const s: Record<string, React.CSSProperties> =
         'blur(24px)',
     },
 
-    borderGlow: {
-      position: 'absolute',
-      inset: '-1px',
-      borderRadius: '36px',
-      padding: '1px',
-      background:
-        'linear-gradient(135deg, rgba(229,9,20,0.72), rgba(255,255,255,0.08), rgba(229,9,20,0.22))',
-      WebkitMask:
-        'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-      WebkitMaskComposite: 'xor',
-      pointerEvents: 'none',
-    },
+    // borderGlow: {
+    //   position: 'absolute',
+    //   inset: '-1px',
+    //   borderRadius: '36px',
+    //   padding: '1px',
+    //   background:
+    //     'linear-gradient(135deg, rgba(229,9,20,0.72), rgba(255,255,255,0.08), rgba(229,9,20,0.22))',
+    //   WebkitMask:
+    //     'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+    //   WebkitMaskComposite: 'xor',
+    //   pointerEvents: 'none',
+    // },
 
     topRow: {
       display: 'flex',
@@ -412,7 +410,7 @@ const s: Record<string, React.CSSProperties> =
       color: '#ffffff',
       fontWeight: 950,
       lineHeight: 0.95,
-      letterSpacing: '-0.07em',
+      letterSpacing: '-0.02em',
       fontSize:
         'clamp(1.9rem, 4vw, 3rem)',
       textShadow:
