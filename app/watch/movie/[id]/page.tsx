@@ -8,8 +8,25 @@ import {
 } from '@/lib/tmdb';
 import { WatchPlayer } from '@/components/watch-player';
 import { SubtitleConverterPanel } from '@/components/subtitle-converter-panel';
+import { cookies } from 'next/headers';
+import { createServerClient } from '@supabase/ssr';
 
 export const revalidate = 3600;
+
+async function getSupabaseServer() {
+  const cookieStore = await cookies();
+
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+    {
+      cookies: {
+        getAll: () => cookieStore.getAll(),
+        setAll: () => {},
+      },
+    }
+  );
+}
 
 export default async function WatchMoviePage({
   params,
@@ -22,11 +39,34 @@ export default async function WatchMoviePage({
   if (!movieId || Number.isNaN(movieId)) notFound();
 
   const movie = await fetchMovieDetailsFull(movieId).catch(() => null);
-
   if (!movie) notFound();
 
+  // NEW: load last provider from continue_watching for this movie
+  const supabase = await getSupabaseServer();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  let initialProvider: 'vidking' | 'vidsrc' = 'vidking';
+
+  if (user) {
+    const { data: cwRow } = await supabase
+      .from('continue_watching')
+      .select('provider_key')
+      .eq('user_id', user.id)
+      .eq('tmdb_id', movieId)
+      .eq('media_type', 'movie')
+      .order('last_position_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (cwRow?.provider_key === 'vidking' || cwRow?.provider_key === 'vidsrc') {
+      initialProvider = cwRow.provider_key;
+    }
+  }
+
   return (
-    <main className="min-h-screen bg-[#0b0b0f] text-white">
+    <main className="min-h-screen bg-[#0b0b0f] text.white">
       <section className="mx-auto max-w-7xl px-6 py-8 md:px-10">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
           <div>
@@ -57,8 +97,9 @@ export default async function WatchMoviePage({
           tmdbId={movie.id}
           mediaType="movie"
           title={getTitle(movie)}
-          initialProvider="vidking"
+          initialProvider={initialProvider}
         />
+
         <SubtitleConverterPanel title={getTitle(movie)} />
       </section>
     </main>

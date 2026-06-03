@@ -114,6 +114,11 @@ export async function POST(request: Request) {
 
     const now = new Date().toISOString();
 
+    const hasProgressPayload =
+      typeof body.progressSeconds === 'number' ||
+      typeof body.durationSeconds === 'number' ||
+      typeof body.progressPercent === 'number';
+
     const baseRecord = {
       user_id: user.id,
       tmdb_id: tmdbId,
@@ -125,12 +130,13 @@ export async function POST(request: Request) {
       episode_number: episodeNumber,
       provider_key: providerKey,
       server_key: serverKey,
-      progress_seconds: progressSeconds,
-      duration_seconds: durationSeconds,
-      // progress_percent: Number(progressPercent.toFixed(2)),
-      progress_percent: progressPercent,
-      status,
-      last_watched_at: now,
+      ...(hasProgressPayload && {
+        progress_seconds: progressSeconds,
+        duration_seconds: durationSeconds,
+        progress_percent: progressPercent,
+        status,
+        last_watched_at: now,
+      }),
       updated_at: now,
     };
 
@@ -175,10 +181,12 @@ export async function POST(request: Request) {
         episode_number: episodeNumber,
         provider_key: providerKey,
         server_key: serverKey,
-        progress_seconds: progressSeconds,
-        duration_seconds: durationSeconds,
-        progress_percent: Number(progressPercent.toFixed(2)),
-        last_position_at: now,
+        ...(hasProgressPayload && {
+          progress_seconds: progressSeconds,
+          duration_seconds: durationSeconds,
+          progress_percent: Number(progressPercent.toFixed(2)),
+          last_position_at: now,
+        }),
         updated_at: now,
       };
 

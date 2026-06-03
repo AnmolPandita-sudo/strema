@@ -97,14 +97,14 @@ export function buildPlayerUrl({
 
     if (mediaType === 'movie') {
       const qs = params.toString();
-      return `https://www.vidking.net/embed/movie/${tmdbId}${qs ? `?${qs}` : ''}`;
+      return `https://www.vidking.net/embed/movie/${tmdbId}?color=e50914&autoPlay=true${qs ? `?${qs}` : ''}`;
     }
 
     params.set('nextEpisode', 'true');
     params.set('episodeSelector', 'true');
 
     const qs = params.toString();
-    return `https://www.vidking.net/embed/tv/${tmdbId}/${normalized.season}/${normalized.episode}${qs ? `?${qs}` : ''}`;
+    return `https://www.vidking.net/embed/tv/${tmdbId}/${normalized.season}/${normalized.episode}?color=e50914&autoPlay=true&nextEpisode=true&episodeSelector=true${qs ? `?${qs}` : ''}`;
   }
 
   if (provider === 'vidsrc') {
@@ -128,9 +128,7 @@ export function buildPlayerUrl({
     }
 
     if (mediaType === 'movie') {
-      // Either path or query style; both are valid
-      // return `https://vidsrc-embed.ru/embed/movie/${tmdbId}`;
-      return `https://vidsrc-embed.ru/embed/movie?${params.toString()}`;
+      return `https://vsembed.ru/embed/movie?${params.toString()}`;
     }
 
     // TV episode
@@ -138,7 +136,7 @@ export function buildPlayerUrl({
     params.set('episode', String(normalized.episode));
     params.set('autonext', '1');
 
-    return `https://vidsrc-embed.ru/embed/tv?${params.toString()}`;
+    return `https://vsembed.ru/embed/tv?${params.toString()}`;
   }
 
   if (provider === 'superembed_vip') {

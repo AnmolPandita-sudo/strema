@@ -366,7 +366,11 @@ export function WatchPlayer({
             </div>
 
             <span className="mt-3 flex flex-wrap items-center gap-3 text-sm text-gray-400 uppercase tracking-[0.28em]">
-              <h1>To convert your srt subtitles to vtt format go to down the page</h1>
+              <h1 className=' font-semibold'>NOTE: Only for TV shows, if you watch on VidKing it will resume from the same place when you start watching again from continue watching
+              <p>
+                If you watch on VidSrc it wont resume from the same place when you start watching again from continue watching
+              </p>
+              </h1>
             </span>
 
             <span className="mt-3 flex flex-wrap items-center gap-3 text-sm text-gray-400 uppercase tracking-[0.28em]">
@@ -433,7 +437,32 @@ export function WatchPlayer({
                 <button
                   key={item}
                   type="button"
-                  onClick={() => setProvider(item)}
+                  onClick={async () => {
+                    setProvider(item);
+
+                    // persist last used provider without touching progress
+                    try {
+                      await fetch('/api/watch/progress', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                          tmdbId,
+                          mediaType,
+                          title,
+                          seasonNumber: mediaType === 'tv' ? season : null,
+                          episodeNumber: mediaType === 'tv' ? episode : null,
+                          providerKey: item,
+                          serverKey: null,
+                          progressSeconds: null,
+                          durationSeconds: null,
+                          progressPercent: null,
+                          status: null,
+                        }),
+                      });
+                    } catch {
+                      // ignore; main progress sync still runs via timeupdate
+                    }
+                  }}
                   className={`rounded-full px-5 py-2.5 text-sm font-semibold transition-all duration-300 ${
                     active
                       ? 'bg-red-500 text-white shadow-[0_10px_35px_rgba(239,68,68,0.45)]'
@@ -470,7 +499,12 @@ export function WatchPlayer({
             src={src}
             title={`${title} player`}
             className="absolute inset-0 h-full w-full border-0"
-            allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
+            // Slightly more permissive allow list for VidSrc, keep VidKing as-is
+            allow={
+              provider === 'vidsrc'
+                ? 'autoplay; fullscreen; picture-in-picture; encrypted-media; web-share'
+                : 'autoplay; fullscreen; picture-in-picture; encrypted-media'
+            }
             allowFullScreen
             referrerPolicy="origin-when-cross-origin"
             tabIndex={0}

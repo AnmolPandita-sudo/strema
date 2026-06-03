@@ -224,16 +224,6 @@ export default async function WatchTvPage({
               <p className="mt-4 max-w-3xl text-sm leading-7 text-gray-300 md:text-base">
                 {selectedEpisode?.overview || 'No episode overview available.'}
               </p>
-
-              <div className="mt-5 flex flex-wrap gap-2">
-                {episodes.slice(0, 12).map((item) => {
-                  const active = item.episode_number === activeEpisodeNumber;
-
-                  return (
-                    <></>
-                  );
-                })}
-              </div>
             </section>
 
             <section className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-md">
