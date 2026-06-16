@@ -34,9 +34,9 @@ export const HeroBanner = memo(function HeroBanner({
       .filter(
         (item) =>
           item.backdrop_path &&
-          item.vote_average >= 8 &&
-          item.vote_count >= 300 &&
-          item.popularity >= 50
+          item.vote_average >= 7 &&
+          item.vote_count >= 30 &&
+          item.popularity >= 10
       )
       .sort((a, b) => {
         const scoreA =
@@ -51,7 +51,7 @@ export const HeroBanner = memo(function HeroBanner({
 
         return scoreB - scoreA;
       })
-      .slice(0, 8);
+      .slice(0, 12);
   }, [movies]);
 
   const [active, setActive] = useState(0);
@@ -191,7 +191,7 @@ export const HeroBanner = memo(function HeroBanner({
 
       <div style={s.topShade} />
       <div style={s.sideOverlay} />
-      <div style={s.bottomFade} />
+      
 
       <div
         style={{
@@ -199,6 +199,7 @@ export const HeroBanner = memo(function HeroBanner({
           opacity: blendOpacity * 0.1,
         }}
       />
+      <div style={s.bottomFade} />
 
       {navbar && <div style={s.navbarSlot}>{navbar}</div>}
 
@@ -309,11 +310,22 @@ const s: Record<string, React.CSSProperties> = {
   root: {
     position: 'relative',
     width: '100%',
-    height: '90vh',
+    height: '80vh',
     overflow: 'hidden',
     display: 'flex',
     alignItems: 'flex-end',
-    background: '#0A0B0E',
+    background: `
+      linear-gradient(
+        to top,
+        #0A0B0E 0%,
+        rgba(10,11,14,1) 18%,
+        rgba(10,11,14,0.95) 32%,
+        rgba(10,11,14,0.85) 48%,
+        rgba(10,11,14,0.65) 68%,
+        rgba(10,11,14,0.35) 86%,
+        transparent 100%
+      )
+    `,
   },
 
   backdrop: {
@@ -354,7 +366,7 @@ const s: Record<string, React.CSSProperties> = {
     left: 0,
     right: 0,
     bottom: 0,
-    height: '44%',
+    height: '80%',
     zIndex: 4,
     pointerEvents: 'none',
     background: `
@@ -392,7 +404,7 @@ const s: Record<string, React.CSSProperties> = {
     zIndex: 10,
     width: '100%',
     maxWidth: '720px',
-    padding: '0 20px 40px',
+    padding: '0 20px 50px',
     transition:
       'transform 80ms linear, opacity 80ms linear',
     willChange: 'transform, opacity',

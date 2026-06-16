@@ -801,9 +801,6 @@ input {
 }
 
 @media (max-width: 640px) {
-  .page-shell {
-    padding: 12px 12px 30px;
-  }
 
   .hero-strip,
   .browse-hero {

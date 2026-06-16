@@ -252,10 +252,10 @@ export default async function WatchPage(props: WatchPageProps) {
 
   // Replace this with your real signed stream URL or CDN playback URL.
   // Option 3 requires a direct video source, not iframe providers.
-  const streamUrl =
-    typedMediaType === 'movie'
-      ? 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8'
-      : 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8';
+  // const streamUrl =
+  //   typedMediaType === 'movie'
+  //     ? 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8'
+  //     : 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8';
 
   return (
     <main className="page-shell">
