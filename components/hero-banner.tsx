@@ -240,10 +240,8 @@ export const HeroBanner = memo(function HeroBanner({
           <Image
             key={`${m.media_type ?? 'movie'}-${m.id}`}
             src={imageSrc}
-            alt={getTitle(m)}
-            loading={i === active ? 'eager' : 'lazy'}
-            decoding="async"
-            fetchPriority={i === active ? 'high' : 'low'}
+            alt={getTitle(m) || 'Movie Banner'} // Added fallback just in case getTitle returns undefined
+            priority={i === active} // Let Next.js handle eager loading and fetch priority
             draggable={false}
             style={{
               ...s.backdrop,
