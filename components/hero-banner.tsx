@@ -7,6 +7,7 @@ import {
   getTitle,
   getReleaseDate,
   TmdbMovie,
+  getPosterUrl,
 } from '@/lib/tmdb';
 import { WatchlistButton } from '@/components/watchlist-button';
 import Image from 'next/image';
@@ -20,6 +21,7 @@ type HeroBannerItem = TmdbMovie & {
 
 const AUTO_SLIDE_DELAY = 7000;
 
+
 export const HeroBanner = memo(function HeroBanner({
   movies,
   navbar,
@@ -32,11 +34,11 @@ export const HeroBanner = memo(function HeroBanner({
   const filteredMovies = useMemo(() => {
     return [...movies]
       .filter(
-        (item) =>
-          item.backdrop_path &&
-          (item.media_type === 'movie' ||
-            item.media_type === 'tv')
-      )
+      (item) =>
+        (item.backdrop_path || item.poster_path) &&
+        (item.media_type === 'movie' ||
+          item.media_type === 'tv')
+    )
       .sort(
         (a, b) =>
           (b.popularity ?? 0) -
@@ -47,6 +49,49 @@ export const HeroBanner = memo(function HeroBanner({
 
   const [active, setActive] = useState(0);
   const [scrollY, setScrollY] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
+
+  const nextSlide = useCallback(() => {
+    setActive((prev) => (prev + 1) % filteredMovies.length);
+  }, [filteredMovies.length]);
+
+  const prevSlide = useCallback(() => {
+    setActive((prev) =>
+      prev === 0
+        ? filteredMovies.length - 1
+        : prev - 1
+    );
+  }, [filteredMovies.length]);
+
+  const handleTouchStart = (
+    e: React.TouchEvent
+  ) => {
+    touchStartX.current =
+      e.touches[0].clientX;
+  };
+
+  const handleTouchMove = (
+    e: React.TouchEvent
+  ) => {
+    touchEndX.current =
+      e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    const distance =
+      touchStartX.current -
+      touchEndX.current;
+
+    if (Math.abs(distance) < 50) return;
+
+    if (distance > 0) {
+      nextSlide();
+    } else {
+      prevSlide();
+    }
+  };
 
   const slideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -102,6 +147,20 @@ export const HeroBanner = memo(function HeroBanner({
     };
   }, []);
 
+  useEffect(() => {
+  const update = () => {
+    setIsMobile(window.innerWidth <= 768);
+  };
+
+  update();
+
+  window.addEventListener('resize', update);
+
+  return () => {
+    window.removeEventListener('resize', update);
+  };
+}, []);
+
   const goTo = useCallback((index: number) => {
     setActive(index);
   }, []);
@@ -124,16 +183,16 @@ export const HeroBanner = memo(function HeroBanner({
 
   const title = getTitle(movie);
 
-  const titleLength = title.length;
+  // const titleLength = title.length;
 
-  const titleFontSize =
-    titleLength <= 18
-      ? 'clamp(3rem, 5vw, 4.8rem)'
-      : titleLength <= 28
-      ? 'clamp(2.6rem, 4.4vw, 4rem)'
-      : titleLength <= 40
-      ? 'clamp(2.1rem, 3.5vw, 3.3rem)'
-      : 'clamp(1.75rem, 3vw, 2.7rem)';
+  // const titleFontSize =
+  //   titleLength <= 18
+  //     ? 'clamp(3rem, 5vw, 4.8rem)'
+  //     : titleLength <= 28
+  //     ? 'clamp(2.6rem, 4.4vw, 4rem)'
+  //     : titleLength <= 40
+  //     ? 'clamp(2.1rem, 3.5vw, 3.3rem)'
+  //     : 'clamp(1.75rem, 3vw, 2.7rem)';
 
   const releaseDate = getReleaseDate(movie);
 
@@ -161,24 +220,50 @@ export const HeroBanner = memo(function HeroBanner({
       style={s.root}
       onMouseEnter={clearTimers}
       onMouseLeave={resetTimers}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
     >
-      {filteredMovies.map((m, i) => (
-        <Image
-          key={`${m.media_type ?? 'movie'}-${m.id}`}
-          src={getBackdropUrl(m.backdrop_path, 'original')}
-          alt={getTitle(m)}
-          loading={i === active ? 'eager' : 'lazy'}
-          decoding="async"
-          fetchPriority={i === active ? 'high' : 'low'}
-          draggable={false}
-          style={{
-            ...s.backdrop,
-            opacity: i === active ? imgOpacity : 0,
-          }}
-          height={1080}
-          width={1920}
-        />
-      ))}
+      <button
+        onClick={prevSlide}
+        style={s.arrowLeft}
+      >
+        ❮
+      </button>
+      {filteredMovies.map((m, i) => {
+        const imageSrc =
+          isMobile && m.poster_path
+            ? getPosterUrl(m.poster_path, 'original')
+            : getBackdropUrl(m.backdrop_path, 'original');
+
+        return (
+          <Image
+            key={`${m.media_type ?? 'movie'}-${m.id}`}
+            src={imageSrc}
+            alt={getTitle(m)}
+            loading={i === active ? 'eager' : 'lazy'}
+            decoding="async"
+            fetchPriority={i === active ? 'high' : 'low'}
+            draggable={false}
+            style={{
+              ...s.backdrop,
+              opacity: i === active ? imgOpacity : 0,
+              objectPosition: isMobile
+                ? 'center center'
+                : 'center top',
+            }}
+            height={1080}
+            width={1920}
+          />
+        );
+      })}
+
+      <button
+        onClick={nextSlide}
+        style={s.arrowRight}
+      >
+        ❯
+      </button>
 
       <div style={s.topShade} />
       <div style={s.sideOverlay} />
@@ -394,8 +479,8 @@ const s: Record<string, React.CSSProperties> = {
     position: 'relative',
     zIndex: 10,
     width: '100%',
-    maxWidth: '720px',
-    padding: '0 20px 50px',
+    maxWidth: '620px',
+    padding: '0 20px 80px',
     transition:
       'transform 80ms linear, opacity 80ms linear',
     willChange: 'transform, opacity',
@@ -516,4 +601,33 @@ const s: Record<string, React.CSSProperties> = {
     transition:
       'width 260ms ease, background 260ms ease, opacity 260ms ease',
   },
+  arrowLeft: {
+  position: 'absolute',
+  left: '20px',
+  top: '50%',
+  transform: 'translateY(-50%)',
+  zIndex: 20,
+  width: '48px',
+  height: '48px',
+  borderRadius: '999px',
+  border: 'none',
+  background: 'rgba(0,0,0,0.4)',
+  color: '#fff',
+  cursor: 'pointer',
+},
+
+arrowRight: {
+  position: 'absolute',
+  right: '20px',
+  top: '50%',
+  transform: 'translateY(-50%)',
+  zIndex: 20,
+  width: '48px',
+  height: '48px',
+  borderRadius: '999px',
+  border: 'none',
+  background: 'rgba(0,0,0,0.4)',
+  color: '#fff',
+  cursor: 'pointer',
+},
 };
