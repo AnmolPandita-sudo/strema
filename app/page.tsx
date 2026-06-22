@@ -760,9 +760,9 @@ export default async function Page() {
     safe(getUserWatchlist(), []),
     safe(getLatestWatched(user.id), null),
     safe(fetchNowPlayingMovies(1), EMPTY_LIST_RESPONSE),
-    safe(fetchTrendingAll('day'), EMPTY_LIST_RESPONSE),
-    safe(fetchTrendingMovies('day'), EMPTY_LIST_RESPONSE),
-    safe(fetchTrendingTv('day'), EMPTY_LIST_RESPONSE),
+    safe(fetchTrendingAll('week'), EMPTY_LIST_RESPONSE),
+    safe(fetchTrendingMovies('week'), EMPTY_LIST_RESPONSE),
+    safe(fetchTrendingTv('week'), EMPTY_LIST_RESPONSE),
     safe(fetchPopularMovies(1), EMPTY_LIST_RESPONSE),
     safe(fetchPopularTv(1), EMPTY_LIST_RESPONSE),
     safe(fetchTopRatedMovies(1), EMPTY_LIST_RESPONSE),
@@ -773,19 +773,36 @@ export default async function Page() {
 
   const latestWatchedDisplay = await getLatestWatchedDisplay(latestWatched);
 
-  const rankedHeroItems = await hydrateRankedMedia(globalMostWatched);
+  // const rankedHeroItems = await hydrateRankedMedia(globalMostWatched);
 
-  const fallbackHeroPool = mixAndLimit(
-    14,
-    withMediaType(nowPlaying.results ?? [], 'movie'),
-    withMediaType(trendingMovies.results ?? [], 'movie'),
-    withMediaType(trendingTv.results ?? [], 'tv'),
-    withMediaType(popularMovies.results ?? [], 'movie'),
-    withMediaType(popularTv.results ?? [], 'tv')
-  );
+  // const fallbackHeroPool = mixAndLimit(
+  //   14,
+  //   withMediaType(nowPlaying.results ?? [], 'movie'),
+  //   withMediaType(trendingMovies.results ?? [], 'movie'),
+  //   withMediaType(trendingTv.results ?? [], 'tv'),
+  //   withMediaType(popularMovies.results ?? [], 'movie'),
+  //   withMediaType(popularTv.results ?? [], 'tv')
+  // );
 
-  const heroSource =
-    rankedHeroItems.length >= 5 ? rankedHeroItems : fallbackHeroPool;
+  // const heroSource =
+  //   rankedHeroItems.length >= 5 ? rankedHeroItems : fallbackHeroPool;
+
+    const heroSource = [
+    ...withMediaType(
+      trendingMovies.results ?? [],
+      'movie'
+    ),
+    ...withMediaType(
+      trendingTv.results ?? [],
+      'tv'
+    ),
+  ]
+    .filter((item) => item.backdrop_path)
+    .sort(
+      (a, b) =>
+        (b.popularity ?? 0) -
+        (a.popularity ?? 0)
+    );
 
   const uniqueHeroSource = heroSource.filter(
     (item, index, arr) =>

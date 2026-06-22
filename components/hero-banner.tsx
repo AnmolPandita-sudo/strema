@@ -34,23 +34,14 @@ export const HeroBanner = memo(function HeroBanner({
       .filter(
         (item) =>
           item.backdrop_path &&
-          item.vote_average >= 7 &&
-          item.vote_count >= 30 &&
-          item.popularity >= 10
+          (item.media_type === 'movie' ||
+            item.media_type === 'tv')
       )
-      .sort((a, b) => {
-        const scoreA =
-          (a.vote_average ?? 0) * 140 +
-          (a.popularity ?? 0) * 1.2 +
-          Math.log10((a.vote_count ?? 1)) * 320;
-
-        const scoreB =
-          (b.vote_average ?? 0) * 140 +
-          (b.popularity ?? 0) * 1.2 +
-          Math.log10((b.vote_count ?? 1)) * 320;
-
-        return scoreB - scoreA;
-      })
+      .sort(
+        (a, b) =>
+          (b.popularity ?? 0) -
+          (a.popularity ?? 0)
+      )
       .slice(0, 12);
   }, [movies]);
 
@@ -212,7 +203,7 @@ export const HeroBanner = memo(function HeroBanner({
         }}
       >
         <div style={s.badge}>
-          <span style={s.badgeTag} className='hidden sm:inline-flex'>Trending Now</span>
+          <span style={s.badgeTag} className='hidden sm:inline-flex'>Trending This Week</span>
 
           <span style={s.meta}>
             ★ {rating} &nbsp;·&nbsp; {year}
@@ -310,7 +301,7 @@ const s: Record<string, React.CSSProperties> = {
   root: {
     position: 'relative',
     width: '100%',
-    height: '80vh',
+    height: '95vh',
     overflow: 'hidden',
     display: 'flex',
     alignItems: 'flex-end',
@@ -366,7 +357,7 @@ const s: Record<string, React.CSSProperties> = {
     left: 0,
     right: 0,
     bottom: 0,
-    height: '80%',
+    height: '20%',
     zIndex: 4,
     pointerEvents: 'none',
     background: `
