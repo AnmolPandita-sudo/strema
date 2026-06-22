@@ -233,7 +233,7 @@ export const HeroBanner = memo(function HeroBanner({
       {filteredMovies.map((m, i) => {
         const imageSrc =
           isMobile && m.poster_path
-            ? getPosterUrl(m.poster_path, 'w300')
+            ? getPosterUrl(m.poster_path, 'w780')
             : getBackdropUrl(m.backdrop_path, 'original');
 
         return (
