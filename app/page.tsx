@@ -4,6 +4,7 @@ import { createServerClient } from '@supabase/ssr';
 import { Navbar } from '@/components/navbar';
 import { HeroBanner } from '@/components/hero-banner';
 import { SectionRow } from '@/components/section-row';
+import { CountrySectionRow, CountryItem } from '@/components/country-section-row';
 import { GenreSectionRow } from '@/components/genre-section-row';
 import { getUserWatchlist } from '@/lib/watchlist';
 import {
@@ -75,6 +76,16 @@ const EMPTY_LIST_RESPONSE: PagedResponse<HomeMediaItem> = {
   total_pages: 1,
   total_results: 0,
 };
+
+const POPULAR_COUNTRIES: CountryItem[] = [
+  { iso: 'IN', name: 'India', flag: '🇮🇳' },
+  { iso: 'US', name: 'United States', flag: '🇺🇸' },
+  { iso: 'KR', name: 'South Korea', flag: '🇰🇷' },
+  { iso: 'JP', name: 'Japan', flag: '🇯🇵' },
+  { iso: 'GB', name: 'United Kingdom', flag: '🇬🇧' },
+  { iso: 'FR', name: 'France', flag: '🇫🇷' },
+  { iso: 'ES', name: 'Spain', flag: '🇪🇸' },
+];
 
 function withMediaType<T extends { id: number }>(
   items: T[] = [],
@@ -811,8 +822,8 @@ export default async function Page() {
       ) === index
   );
 
-  const heroMoviesBase = takeFirst(uniqueHeroSource, 7);
-  const heroMovies = await withTrailerKeys(heroMoviesBase, 7);
+  const heroMoviesBase = takeFirst(uniqueHeroSource, 12);
+  const heroMovies = await withTrailerKeys(heroMoviesBase, 12);
 
   const becauseYouWatched = latestWatched
     ? await getBecauseYouWatchedTight(latestWatched)
@@ -947,6 +958,11 @@ export default async function Page() {
             genres={genres}
           />
         )}
+
+        <CountrySectionRow
+          title="Browse by Country"
+          countries={POPULAR_COUNTRIES}
+        />
       </div>
     </main>
   );

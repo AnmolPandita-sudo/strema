@@ -406,18 +406,20 @@ export async function searchTv(query: string, page = 1) {
   });
 }
 
-export async function fetchDiscoverMovies(genreId?: number, page = 1) {
+export async function fetchDiscoverMovies(genreId?: number, page = 1, countryCode?: string) {
   return tmdbFetch<TmdbListResponse<TmdbMovie>>('/discover/movie', {
     with_genres: genreId,
     page,
+    with_origin_country: countryCode,
     sort_by: 'popularity.desc',
   });
 }
 
-export async function fetchDiscoverTv(genreId?: number, page = 1) {
+export async function fetchDiscoverTv(genreId?: number, page = 1, countryCode?: string) {
   return tmdbFetch<TmdbListResponse<TmdbMovie>>('/discover/tv', {
     with_genres: genreId,
     page,
+    with_origin_country: countryCode,
     sort_by: 'popularity.desc',
   });
 }

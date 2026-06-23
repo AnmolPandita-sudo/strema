@@ -11,11 +11,13 @@ export function BrowseClient({
   tvGenres,
   initialItems,
   initialTotalPages,
+  activeCountry,
 }: {
   movieGenres: TmdbGenre[];
   tvGenres: TmdbGenre[];
   initialItems: TmdbMovie[];
   initialTotalPages: number;
+  activeCountry: string;
 }) {
   const [tab, setTab] = useState<MediaTab>('movie');
   const [genreId, setGenreId] = useState<number | undefined>(undefined);
@@ -37,6 +39,7 @@ export function BrowseClient({
   ) => {
     const params = new URLSearchParams({ type: newTab, page: String(newPage) });
     if (typeof newGenre === 'number') params.set('genre', String(newGenre));
+    if (activeCountry) params.set('country', activeCountry);
 
     if (replace) {
       setIsReplacing(true);
