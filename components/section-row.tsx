@@ -92,7 +92,7 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: '12px',
-    marginBottom: '16px',
+    marginBottom: '14px',
   },
   leftGroup: {
     display: 'flex',
@@ -108,10 +108,12 @@ const styles: Record<string, React.CSSProperties> = {
   },
   title: {
     margin: 0,
-    fontSize: '1.55rem',
-    fontWeight: 800,
-    letterSpacing: '-0.04em',
-    color: 'rgba(255,255,255,0.96)',
+    // Forces Apple's SF Pro font on Apple devices, and clean sans-serifs elsewhere
+    fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+    fontSize: '1.35rem', // Slightly smaller, more refined
+    fontWeight: 700,     // Bold, but not ultra-thick
+    letterSpacing: '-0.015em', // Breathable tracking
+    color: '#f5f5f7',    // Apple's signature off-white text color
   },
   more: {
     marginLeft: 'auto',

@@ -77,7 +77,7 @@ export default async function TvPage({
 
   if (!tvId || Number.isNaN(tvId)) notFound();
 
-    const user = await getSessionUser(); // may be null if not logged in
+  const user = await getSessionUser(); // may be null if not logged in
 
   const [show, watchlistRows, lastProgress] = await Promise.all([
     fetchTvDetailsFull(tvId).catch(() => null),
@@ -102,6 +102,9 @@ export default async function TvPage({
   const trailerUrl = trailer?.key ? getYoutubeEmbedUrl(trailer.key, true, true) : null;
   const firstAvailableSeason = seasonCollection[0];
   const firstAvailableEpisode = firstAvailableSeason?.episodes?.[0];
+
+  // Check if the TV show's first air date is strictly in the future compared to today
+  const isUnreleased = show.first_air_date ? new Date(show.first_air_date) > new Date() : false;
 
   let targetSeason = firstAvailableSeason?.season_number ?? 1;
   let targetEpisode = firstAvailableEpisode?.episode_number ?? 1;
@@ -157,7 +160,7 @@ export default async function TvPage({
           <div className="flex flex-wrap items-center gap-3 pt-2">
             <WatchlistButton tmdbId={show.id} mediaType="tv" initialSaved={isSaved} />
 
-            {firstAvailableEpisode ? (
+            {!isUnreleased && firstAvailableEpisode ? (
               <Link
                 href={startHref}
                 className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-red-500 px-7 py-3 font-bold text-white transition hover:bg-red-600 active:scale-95"
@@ -167,6 +170,13 @@ export default async function TvPage({
                 </svg>
                 {lastProgress ? 'Continue Watching' : 'Start Watching'}
               </Link>
+            ) : isUnreleased ? (
+              <div className="inline-flex cursor-not-allowed items-center gap-2 rounded-full border border-white/10 bg-white/10 px-7 py-3 font-bold text-white/50">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+                Unavailable
+              </div>
             ) : null}
           </div>
         </div>
@@ -225,7 +235,7 @@ export default async function TvPage({
             </div>
 
             <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 md:grid-cols-4">
-              {related.map((item) => (
+              {related.map((item: any) => (
                 <Link
                   key={item.id}
                   href={`/tv/${item.id}`}
@@ -329,7 +339,7 @@ export default async function TvPage({
               <h2 className="mb-4 text-xl font-bold">Genres</h2>
 
               <div className="flex flex-wrap gap-2">
-                {genres.map((genre) => (
+                {genres.map((genre: any) => (
                   <span
                     key={genre.id}
                     className="rounded-full border border-white/10 bg-white/10 px-4 py-2 text-sm"

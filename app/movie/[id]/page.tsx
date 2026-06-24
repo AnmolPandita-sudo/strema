@@ -48,6 +48,9 @@ export default async function MoviePage({
 
   const trailerUrl = trailer?.key ? getYoutubeEmbedUrl(trailer.key, true, true) : null;
   const playHref = `/watch/movie/${movie.id}`;
+  
+  // Check if the movie's release date is strictly in the future compared to today
+  const isUnreleased = movie.release_date ? new Date(movie.release_date) > new Date() : false;
 
   return (
     <main className="min-h-screen bg-[#0b0b0f] text-white">
@@ -79,15 +82,24 @@ export default async function MoviePage({
           </p>
 
           <div className="flex items-center gap-3 pt-2">
-            <Link
-              href={playHref}
-              className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-red-500 px-7 py-3 font-bold text-white transition hover:bg-red-600 active:scale-95"
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M8 5v14l11-7z" />
-              </svg>
-              Play
-            </Link>
+            {!isUnreleased ? (
+              <Link
+                href={playHref}
+                className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-red-500 px-7 py-3 font-bold text-white transition hover:bg-red-600 active:scale-95"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+                Play
+              </Link>
+            ) : (
+              <div className="inline-flex cursor-not-allowed items-center gap-2 rounded-full border border-white/10 bg-white/10 px-7 py-3 font-bold text-white/50">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+                Unavailable
+              </div>
+            )}
 
             <WatchlistButton tmdbId={movie.id} mediaType="movie" initialSaved={isSaved} />
           </div>

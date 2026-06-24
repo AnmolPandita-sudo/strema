@@ -770,14 +770,14 @@ export default async function Page() {
     safe(getContinueWatching(user.id), [] as HomeMediaItem[]),
     safe(getUserWatchlist(), []),
     safe(getLatestWatched(user.id), null),
-    safe(fetchNowPlayingMovies(1), EMPTY_LIST_RESPONSE),
+    safe(fetchNowPlayingMovies(), EMPTY_LIST_RESPONSE),
     safe(fetchTrendingAll('week'), EMPTY_LIST_RESPONSE),
     safe(fetchTrendingMovies('week'), EMPTY_LIST_RESPONSE),
     safe(fetchTrendingTv('week'), EMPTY_LIST_RESPONSE),
-    safe(fetchPopularMovies(1), EMPTY_LIST_RESPONSE),
-    safe(fetchPopularTv(1), EMPTY_LIST_RESPONSE),
-    safe(fetchTopRatedMovies(1), EMPTY_LIST_RESPONSE),
-    safe(fetchTopRatedTv(1), EMPTY_LIST_RESPONSE),
+    safe(fetchPopularMovies(), EMPTY_LIST_RESPONSE),
+    safe(fetchPopularTv(), EMPTY_LIST_RESPONSE),
+    safe(fetchTopRatedMovies(), EMPTY_LIST_RESPONSE),
+    safe(fetchTopRatedTv(), EMPTY_LIST_RESPONSE),
     safe(fetchMovieGenres(), []),
     safe(getGlobalMostWatchedCandidates(), []),
   ]);
@@ -888,7 +888,23 @@ export default async function Page() {
       <div style={{ padding: '0 18px 40px' }}>
         {continueWatching.length > 0 && (
           <SectionRow
-            title="Continue Watching"
+            title={
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', flexWrap: 'wrap' }}>
+                <span>Continue Watching</span>
+                <span 
+                  style={{ 
+                    fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif",
+                    fontSize: '0.8rem', 
+                    fontWeight: 500, 
+                    color: '#86868b',
+                    letterSpacing: '0.01em',
+                    textTransform: 'none'
+                  }}
+                >
+                  (Removal available on desktop)
+                </span>
+              </div>
+            }
             href="/profile/history"
             items={continueWatching}
             showRank={false}
