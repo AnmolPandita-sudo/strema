@@ -46,6 +46,7 @@ export function MediaCard({
   const [isRemoving, setIsRemoving] = useState(false);
   const [isDeleted, setIsDeleted] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
 
   const [optimisticSaved, setOptimisticSaved] = useOptimistic(
     watchlistMode,
@@ -77,13 +78,18 @@ export function MediaCard({
       clearTimeout(timer);
       setShowPreview(false);
     };
+    setIsTouchDevice(window.matchMedia('(hover: none)').matches);
   }, [continueWatchingMode, disablePreview, isHovered, item.trailerKey]);
 
-  const handlePlay = () => {
+  const handlePlay = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     router.push(playHref);
   };
 
-  const handleWatchlist = () => {
+  const handleWatchlist = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     startTransition(async () => {
       const nextSaved = !optimisticSaved;
       setOptimisticSaved(nextSaved);
@@ -151,7 +157,7 @@ export function MediaCard({
       ? getYoutubeEmbedUrl(item.trailerKey, true, true)
       : null;
 
-  const overlayVisible = continueWatchingMode ? isHovered : isHovered;
+  const overlayVisible = isTouchDevice || isHovered;
 
   if (isDeleted) {
     return null;
@@ -252,7 +258,7 @@ export function MediaCard({
             <>
               <button
                 type="button"
-                onClick={handlePlay}
+                onClick={(e) => handlePlay(e)}
                 aria-label={`Play ${title}`}
                 style={styles.actionButtonPrimary}
               >
@@ -261,7 +267,7 @@ export function MediaCard({
 
               <button
                 type="button"
-                onClick={handleWatchlist}
+                onClick={(e) => handleWatchlist(e)}
                 aria-label={
                   optimisticSaved
                     ? `Remove ${title} from watchlist`
