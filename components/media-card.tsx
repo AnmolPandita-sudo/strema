@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useOptimistic, useState, useTransition } from 'react';
+import { useEffect, useOptimistic, useState, useTransition, useRef } from 'react';
 import { Play, Plus, X } from 'lucide-react';
 import { toggleWatchlist } from '@/app/actions/watchlist';
 import { createClient } from '@/lib/supabase/client';
@@ -44,6 +44,8 @@ export function MediaCard({
   const [isHovered, setIsHovered] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [isRemoving, setIsRemoving] = useState(false);
+  const [isDeleted, setIsDeleted] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
 
   const [optimisticSaved, setOptimisticSaved] = useOptimistic(
     watchlistMode,
@@ -97,14 +99,30 @@ export function MediaCard({
     });
   };
 
-  const handleRemoveFromContinueWatching = async () => {
+  const handleRemoveFromContinueWatching = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
     try {
       setIsRemoving(true);
+      
+      // 🔥 SMOOTH ANIMATION: Target the wrapper div from SectionRow and collapse it
+      if (cardRef.current && cardRef.current.parentElement) {
+        const wrapper = cardRef.current.parentElement;
+        wrapper.style.transition = 'all 350ms cubic-bezier(0.25, 1, 0.5, 1)';
+        wrapper.style.opacity = '0';
+        wrapper.style.transform = 'scale(0.85)';
+        wrapper.style.flex = '0 0 0px'; // Collapse the width
+        wrapper.style.marginRight = '-18px'; // Counteract the 18px gap in SectionRow
+        wrapper.style.overflow = 'hidden';
+      }
+
+      // We no longer need setIsDeleted(true) because the CSS animation hides it perfectly!
 
       const supabase = createClient();
 
       let query = supabase
-        .from('watch_history')
+        .from('continue_watching')
         .delete()
         .eq('tmdb_id', item.id)
         .eq('media_type', resolvedMediaType);
@@ -113,8 +131,6 @@ export function MediaCard({
         query = query
           .eq('season_number', Number(item.season ?? 1))
           .eq('episode_number', Number(item.episode ?? 1));
-      } else {
-        query = query.eq('season_number', 0).eq('episode_number', 0);
       }
 
       const { error } = await query;
@@ -126,7 +142,7 @@ export function MediaCard({
 
       router.refresh();
     } finally {
-      setIsRemoving(false);
+      // Keep isRemoving true so they can't spam click it while it animates away
     }
   };
 
@@ -137,9 +153,18 @@ export function MediaCard({
 
   const overlayVisible = continueWatchingMode ? isHovered : isHovered;
 
+  if (isDeleted) {
+    return null;
+  }
+
   return (
     <div
-      style={styles.card}
+      ref={cardRef}
+      style={{
+        ...styles.card,
+        transition: 'opacity 150ms ease',
+        opacity: isRemoving ? 0.5 : 1,
+      }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => {
         setIsHovered(false);
