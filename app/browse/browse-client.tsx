@@ -17,7 +17,7 @@ export function BrowseClient({
   tvGenres: TmdbGenre[];
   initialItems: TmdbMovie[];
   initialTotalPages: number;
-  activeCountry: string;
+  activeCountry?: string;
 }) {
   const [tab, setTab] = useState<MediaTab>('movie');
   const [genreId, setGenreId] = useState<number | undefined>(undefined);

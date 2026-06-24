@@ -47,9 +47,7 @@ export default async function BrowsePage({ searchParams }: { searchParams: Searc
         tvGenres={tvGenres}
         initialItems={initial.results ?? []}
         initialTotalPages={initial.total_pages}
-        
-        // 🚨 CRUCIAL: Pass the countryCode down to your client!
-        // activeCountry={countryCode} 
+        activeCountry={countryCode} 
       />
     </main>
   );
